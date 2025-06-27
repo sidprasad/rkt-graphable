@@ -39,7 +39,8 @@
   (define (walk v)
     (define type-name (cond
                         [(struct? v) (symbol->string (object-name v))]
-                        [(list? v) "list"]
+                        [(null? v) "null"]
+                        [(list? v) "list"] ; TODO: Figure out how to handle lists?
                         [(symbol? v) "symbol"]
                         [(number? v) "number"]
                         [else "unknown"]))
@@ -60,6 +61,11 @@
                (format "~a~arg~a" name i)))
          (define child-id (walk child))
          (set! edges (cons `((src . ,id) (dst . ,child-id) (label . ,label)) edges)))
+       id]
+
+      [(null? v)
+       (define node `((id . ,id) (label . "null") (type . "null")))
+       (set! nodes (cons node nodes))
        id]
 
       [(list? v)

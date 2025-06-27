@@ -1,4 +1,4 @@
-#lang s-exp "graphable/lang/main.rkt"
+#lang s-exp "../graphable/lang/main.rkt"
 
 (require racket/pretty)
 
