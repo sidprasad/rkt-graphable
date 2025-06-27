@@ -31,27 +31,33 @@
 ;; Core graph extraction
 (define (expr->graph expr)
   (define counter (make-counter 0))
-  (define (new-id) (format "n~a" (counter)))
+  (define (new-id) (format "~a" (counter)))
 
   (define nodes '())
   (define edges '())
 
   (define (walk v)
-    (define id (new-id))
+    (define type-name (cond
+                        [(struct? v) (symbol->string (object-name v))]
+                        [(list? v) "list"]
+                        [(symbol? v) "symbol"]
+                        [(number? v) "number"]
+                        [else "unknown"]))
+    (define id (format "~a$~a" type-name (counter)))
     (cond
       [(struct? v)
-       (define name (object-name v))
-       (define type-name (symbol->string name))
-       (define node `((id . ,id) (label . ,type-name) (type . ,type-name)))
+       (define label id)
+       (define node `((id . ,id) (label . ,label) (type . ,type-name)))
        (set! nodes (cons node nodes))
 
+       (define name (object-name v))
        (define fields (hash-ref graph-schema name #f))
        (define field-values (cdr (vector->list (struct->vector v))))
        (for ([child field-values] [i (in-naturals)])
          (define label
            (if (and fields (< i (length fields)))
                (symbol->string (list-ref fields i))
-               (format "~a-arg~a" name i)))
+               (format "~a~arg~a" name i)))
          (define child-id (walk child))
          (set! edges (cons `((src . ,id) (dst . ,child-id) (label . ,label)) edges)))
        id]
