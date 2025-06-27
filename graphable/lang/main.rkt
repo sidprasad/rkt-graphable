@@ -94,17 +94,16 @@
        (values (symbol->string-jsexpr k) (symbol->string-jsexpr val)))]
     [else v]))
 
-;; Convert a list of dotted pairs to a list of 2-element lists with string keys and values
-(define (alist->json-list alist)
-  (map (lambda (pr)
-         (list (symbol->string (car pr))
-               (cond [(symbol? (cdr pr)) (symbol->string (cdr pr))]
-                     [else (cdr pr)])))
-       alist))
+;; Convert a list of dotted pairs to a hash table with string keys and values
+(define (alist->json-hash alist)
+  (for/hash ([pr alist])
+    (values (symbol->string (car pr))
+            (let ([v (cdr pr)])
+              (if (symbol? v) (symbol->string v) v)))))
 
 (define (expr->graph-json expr)
   (define-values (nodes edges) (expr->graph expr))
-  (define json-nodes (map alist->json-list nodes))
-  (define json-edges (map alist->json-list edges))
+  (define json-nodes (map alist->json-hash nodes))
+  (define json-edges (map alist->json-hash edges))
   (jsexpr->string (list (cons "atoms" json-nodes)
                         (cons "relations" json-edges))))
