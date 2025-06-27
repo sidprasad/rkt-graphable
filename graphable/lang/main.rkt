@@ -94,10 +94,10 @@
        (values (symbol->string-jsexpr k) (symbol->string-jsexpr val)))]
     [else v]))
 
-;; Convert a list of dotted pairs to a hash table with string keys and values
+;; Convert a list of dotted pairs to a hash table with symbol keys and string values
 (define (alist->json-hash alist)
   (for/hash ([pr alist])
-    (values (symbol->string (car pr))
+    (values (car pr)
             (let ([v (cdr pr)])
               (if (symbol? v) (symbol->string v) v)))))
 
@@ -105,5 +105,4 @@
   (define-values (nodes edges) (expr->graph expr))
   (define json-nodes (map alist->json-hash nodes))
   (define json-edges (map alist->json-hash edges))
-  (jsexpr->string (list (cons "atoms" json-nodes)
-                        (cons "relations" json-edges))))
+  (jsexpr->string (hash 'atoms json-nodes 'relations json-edges)))
