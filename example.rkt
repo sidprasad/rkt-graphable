@@ -13,4 +13,5 @@
       (redblack 'black 12 '() '())
       (redblack 'black 20 '() '()))))
 
-(pretty-print (expr->graph-str my-rbtree))
+#(pretty-print (expr->graph-str my-rbtree))
+(pretty-print (expr->graph-json my-rbtree))

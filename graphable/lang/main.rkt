@@ -94,10 +94,17 @@
        (values (symbol->string-jsexpr k) (symbol->string-jsexpr val)))]
     [else v]))
 
+;; Convert a list of dotted pairs to a list of 2-element lists with string keys and values
+(define (alist->json-list alist)
+  (map (lambda (pr)
+         (list (symbol->string (car pr))
+               (cond [(symbol? (cdr pr)) (symbol->string (cdr pr))]
+                     [else (cdr pr)])))
+       alist))
+
 (define (expr->graph-json expr)
   (define-values (nodes edges) (expr->graph expr))
-  (jsexpr->string (symbol->string-jsexpr `((atoms . ,nodes) (relations . ,edges)))))
-
-(define (expr->graph-str expr)
-  (define-values (nodes edges) (expr->graph expr))
-  (format "nodes:~a\nedges:~a" nodes edges))
+  (define json-nodes (map alist->json-list nodes))
+  (define json-edges (map alist->json-list edges))
+  (jsexpr->string (list (cons "atoms" json-nodes)
+                        (cons "relations" json-edges))))
