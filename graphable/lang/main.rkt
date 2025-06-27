@@ -86,6 +86,11 @@
        (set! nodes (cons node nodes))
        id]
 
+      [(boolean? v)
+       (define node `((id . ,id) (label . ,(if v "#t" "#f")) (type . "boolean")))
+       (set! nodes (cons node nodes))
+       id]
+
       [else
        (define node `((id . ,id) (label . "?") (type . "unknown")))
        (set! nodes (cons node nodes))
