@@ -77,12 +77,14 @@
        id]
 
       [(symbol? v)
-       (define node `((id . ,id) (label . ,(symbol->string v)) (type . "symbol")))
+       (define id (symbol->string v))
+       (define node `((id . ,id) (label . ,id) (type . "symbol")))
        (set! nodes (cons node nodes))
        id]
 
       [(number? v)
-       (define node `((id . ,id) (label . ,(format "~a" v)) (type . "number")))
+       (define id v)
+       (define node `((id . ,id) (label . ,id) (type . "number")))
        (set! nodes (cons node nodes))
        id]
 
